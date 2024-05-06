@@ -27,46 +27,28 @@ public class KafkaConsumerConfig {
 
     @Bean
     KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, SimpleMessage>> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, SimpleMessage> factory =
+        ConcurrentKafkaListenerContainerFactory<String, SimpleMessage> listenerFactory =
                 new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
-        factory.setConcurrency(3);
-        factory.getContainerProperties().setPollTimeout(3000);
-        return factory;
+        listenerFactory.setConsumerFactory(consumerFactory());
+        listenerFactory.setConcurrency(3);
+        listenerFactory.getContainerProperties().setPollTimeout(3000);
+        return listenerFactory;
     }
 
     @Bean
     public ConsumerFactory<String, SimpleMessage> consumerFactory() {
         JsonDeserializer<SimpleMessage> payloadJsonDeserializer = new JsonDeserializer<>(SimpleMessage.class);
-
-        payloadJsonDeserializer.addTrustedPackages("com.example.kafka.msg.SimpleMessage");
-
+//        payloadJsonDeserializer.addTrustedPackages(SimpleMessage.class.getCanonicalName());
         return new DefaultKafkaConsumerFactory<>(consumerConfigs(), null, payloadJsonDeserializer);
     }
 
     @Bean
     public Map<String, Object> consumerConfigs() {
-//        Map<String, Object> props = new HashMap<>();
-//        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafka.getBrokersAsString());
         Map<String, Object> props = new HashMap<>();
-        props.put(
-                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                bootstrapAddress);
-        props.put(
-                ConsumerConfig.GROUP_ID_CONFIG,
-                "grupa1");
-
-        props.put(
-                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-                StringDeserializer.class);
-        props.put(
-                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-                JsonSerializer.class);
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "grupa1");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, com.fasterxml.jackson.databind.JsonDeserializer.class);
         return props;
     }
-
-
-
-
-
 }

@@ -12,7 +12,9 @@ public class ConsumeMessage {
     @KafkaListener(id = "myListener",
                    autoStartup = "${listen.auto.start:true}", concurrency = "${listen.concurrency:3}",
                    topicPartitions = {
-                            @TopicPartition(topic = "quickstart-events", partitionOffsets = @PartitionOffset(partition = "0", initialOffset = "0")),
+                            @TopicPartition(
+                                    topic = "quickstart-events",
+                                    partitionOffsets = @PartitionOffset(partition = "0", initialOffset = "0")),
                            })
     public void listener(SimpleMessage message) {
         System.out.println("Received SimpleMessage: " + message);
